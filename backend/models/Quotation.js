@@ -8,10 +8,15 @@ const quotationSchema = new mongoose.Schema({
     address: { type: String, required: true }
   },
   projectInfo: {
-    gameType: { type: String, required: false }, // Make this optional for backward compatibility
-    courtType: { type: String, required: true }, // indoor/outdoor
-    courtSize: { type: String, required: true }, // standard/custom/premium
-    sport: { type: String, required: true }
+    gameType: { type: String, required: false },
+    courtType: { type: String, required: true },
+    courtSize: { type: String, required: true },
+    sport: { type: String, required: true },
+    customDimensions: {
+      length: { type: Number },
+      width: { type: Number },
+      area: { type: Number }
+    }
   },
   requirements: {
     base: {

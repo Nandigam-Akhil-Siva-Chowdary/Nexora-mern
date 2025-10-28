@@ -175,8 +175,33 @@ router.post('/', async (req, res) => {
     }
 
     // Get court area based on sport and size
-    const courtArea = pricing.courtSizes[projectInfo.sport]?.[projectInfo.courtSize] || 100;
-    console.log('Court area calculated:', courtArea, 'for sport:', projectInfo.sport, 'size:', projectInfo.courtSize);
+// In the POST route, find the court area calculation section and replace it with:
+// Get court area based on sport and size
+let courtArea;
+if (projectInfo.courtSize === 'standard') {
+  courtArea = pricing.courtSizes[projectInfo.sport]?.['standard'] || 100;
+  console.log('Using standard court area:', courtArea);
+} else {
+  // For custom and premium sizes, use the provided dimensions
+  courtArea = parseFloat(projectInfo.customDimensions?.area) || 100;
+  console.log('Using custom court area:', courtArea, 'Dimensions:', projectInfo.customDimensions);
+}
+
+// Add validation for custom dimensions
+if ((projectInfo.courtSize === 'custom' || projectInfo.courtSize === 'premium') && projectInfo.customDimensions) {
+  console.log('Custom dimensions received:', projectInfo.customDimensions);
+  
+  // Validate dimensions
+  if (!projectInfo.customDimensions.length || !projectInfo.customDimensions.width) {
+    return res.status(400).json({ 
+      message: 'Please provide both length and width for custom dimensions' 
+    });
+  }
+  
+  const calculatedArea = parseFloat(projectInfo.customDimensions.length) * parseFloat(projectInfo.customDimensions.width);
+  console.log('Calculated area from dimensions:', calculatedArea);
+  console.log('Provided area:', projectInfo.customDimensions.area);
+}
 
     // Calculate costs
     const baseCost = Math.round((pricing.base[requirements.base.type] || 0) * courtArea);
@@ -223,38 +248,42 @@ router.post('/', async (req, res) => {
     });
 
     // FIX: Use courtType from either field
-    const quotationData = {
-      clientInfo,
-      projectInfo: {
-        sport: projectInfo.sport,
-        courtType: courtType, // Use the resolved courtType
-        courtSize: projectInfo.courtSize
-      },
-      requirements: {
-        base: { 
-          type: requirements.base.type,
-          area: courtArea
-        },
-        flooring: { 
-          type: requirements.flooring.type,
-          area: courtArea
-        },
-        equipment: requirements.equipment || [],
-        lighting: requirements.lighting || { required: false },
-        roof: requirements.roof || { required: false },
-        additionalFeatures: requirements.additionalFeatures || []
-      },
-      pricing: {
-        baseCost,
-        flooringCost,
-        equipmentCost,
-        lightingCost,
-        roofCost,
-        additionalCost,
-        totalCost
-      }
-    };
+// In the quotationData object, make sure customDimensions is included:
+const quotationData = {
+  clientInfo,
+  projectInfo: {
+    sport: projectInfo.sport,
+    courtType: courtType,
+    courtSize: projectInfo.courtSize,
+    // Make sure customDimensions is properly passed through
+    customDimensions: projectInfo.customDimensions || null
+  },
+  requirements: {
+    base: { 
+      type: requirements.base.type,
+      area: courtArea
+    },
+    flooring: { 
+      type: requirements.flooring.type,
+      area: courtArea
+    },
+    equipment: requirements.equipment || [],
+    lighting: requirements.lighting || { required: false },
+    roof: requirements.roof || { required: false },
+    additionalFeatures: requirements.additionalFeatures || []
+  },
+  pricing: {
+    baseCost,
+    flooringCost,
+    equipmentCost,
+    lightingCost,
+    roofCost,
+    additionalCost,
+    totalCost
+  }
+};
 
+console.log('Final quotation data with custom dimensions:', JSON.stringify(quotationData.projectInfo.customDimensions, null, 2));
     console.log('Creating quotation with data:', quotationData);
     const quotation = new Quotation(quotationData);
     await quotation.save();

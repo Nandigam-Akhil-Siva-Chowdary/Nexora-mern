@@ -539,3 +539,74 @@
   opacity: 0.6;
   cursor: not-allowed;
 }
+
+/* Custom Dimensions Styles */
+.custom-dimensions {
+  background: #f8f9fa;
+  border-radius: 10px;
+  padding: 20px;
+  margin-top: 20px;
+  border-left: 4px solid #17a2b8;
+}
+
+.dimensions-input-group {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 15px;
+  margin: 20px 0;
+}
+
+.readonly-input {
+  background-color: #e9ecef;
+  cursor: not-allowed;
+}
+
+.dimension-examples {
+  background: white;
+  padding: 15px;
+  border-radius: 8px;
+  margin-top: 15px;
+}
+
+.dimension-examples h4 {
+  margin: 0 0 10px 0;
+  color: #495057;
+}
+
+.examples-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 10px;
+  font-size: 0.9em;
+}
+
+.examples-grid span {
+  background: #e9ecef;
+  padding: 8px 12px;
+  border-radius: 5px;
+  text-align: center;
+}
+
+.recommendation {
+  background: #d1ecf1;
+  border: 1px solid #bee5eb;
+  border-radius: 5px;
+  padding: 10px;
+  margin-bottom: 15px;
+}
+
+.recommendation p {
+  margin: 0;
+  color: #0c5460;
+}
+
+/* Responsive design for dimensions */
+@media (max-width: 768px) {
+  .dimensions-input-group {
+    grid-template-columns: 1fr;
+  }
+  
+  .examples-grid {
+    grid-template-columns: 1fr;
+  }
+}

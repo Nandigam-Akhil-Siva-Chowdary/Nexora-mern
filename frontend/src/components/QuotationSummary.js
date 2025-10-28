@@ -171,28 +171,50 @@ const QuotationSummary = ({ formData, prevStep, updateData }) => {
       yPosition += (addressLines.length * 6);
       
       // Project details section - FIXED: Added safe access with optional chaining
-      yPosition += 10;
-      doc.setFontSize(12);
-      doc.setFont('helvetica', 'bold');
-      doc.text('PROJECT DETAILS', margin, yPosition);
-      
-      yPosition += 8;
-      doc.setFontSize(10);
-      doc.setFont('helvetica', 'normal');
-      
-      // Safe access to projectInfo properties
-      const sport = quotationData.projectInfo?.sport || 'N/A';
-      const courtType = quotationData.projectInfo?.courtType || quotationData.projectInfo?.gameType || 'N/A';
-      const courtSize = quotationData.projectInfo?.courtSize || 'N/A';
-      const courtArea = quotationData.requirements?.base?.area || 'N/A';
-      
-      doc.text(`Sport: ${String(sport).replace(/-/g, ' ').toUpperCase()}`, margin, yPosition);
-      yPosition += 6;
-      doc.text(`Facility Type: ${String(courtType).toUpperCase()}`, margin, yPosition);
-      yPosition += 6;
-      doc.text(`Court Size: ${String(courtSize).toUpperCase()}`, margin, yPosition);
-      yPosition += 6;
-      doc.text(`Court Area: ${courtArea} sq. meters`, margin, yPosition);
+// In the downloadPDF function, find the project details section and replace it with:
+// Project details section
+yPosition += 10;
+doc.setFontSize(12);
+doc.setFont('helvetica', 'bold');
+doc.text('PROJECT DETAILS', margin, yPosition);
+
+yPosition += 8;
+doc.setFontSize(10);
+doc.setFont('helvetica', 'normal');
+
+// Safe access to projectInfo properties
+const sport = quotationData.projectInfo?.sport || 'N/A';
+const courtType = quotationData.projectInfo?.courtType || quotationData.projectInfo?.gameType || 'N/A';
+const courtSize = quotationData.projectInfo?.courtSize || 'N/A';
+const courtArea = quotationData.requirements?.base?.area || 'N/A';
+
+doc.text(`Sport: ${String(sport).replace(/-/g, ' ').toUpperCase()}`, margin, yPosition);
+yPosition += 6;
+doc.text(`Facility Type: ${String(courtType).toUpperCase()}`, margin, yPosition);
+yPosition += 6;
+doc.text(`Court Size: ${String(courtSize).toUpperCase()}`, margin, yPosition);
+yPosition += 6;
+doc.text(`Court Area: ${courtArea} sq. meters`, margin, yPosition);
+
+// Show custom dimensions if available - FIXED THIS SECTION
+if (quotationData.projectInfo?.customDimensions && 
+    quotationData.projectInfo.customDimensions.length && 
+    quotationData.projectInfo.customDimensions.width) {
+  
+  console.log('Showing custom dimensions in PDF:', quotationData.projectInfo.customDimensions);
+  
+  yPosition += 6;
+  doc.text(`Custom Length: ${quotationData.projectInfo.customDimensions.length} meters`, margin, yPosition);
+  
+  yPosition += 6;
+  doc.text(`Custom Width: ${quotationData.projectInfo.customDimensions.width} meters`, margin, yPosition);
+  
+  // Show calculated area for verification
+  yPosition += 6;
+  const calculatedArea = parseFloat(quotationData.projectInfo.customDimensions.length) * 
+                        parseFloat(quotationData.projectInfo.customDimensions.width);
+  doc.text(`Calculated Area: ${calculatedArea.toFixed(2)} sq. meters`, margin, yPosition);
+}
       
       // Cost breakdown section
       yPosition += 15;
@@ -336,17 +358,31 @@ const QuotationSummary = ({ formData, prevStep, updateData }) => {
             </div>
           </div>
 
-          <div className="section">
-            <h4>Project Details</h4>
-            <div className="info-grid">
-              {/* FIXED: Safe access with optional chaining */}
-              <div><strong>Sport:</strong> {String(quotation.projectInfo?.sport || 'N/A').replace(/-/g, ' ').toUpperCase()}</div>
-              <div><strong>Facility Type:</strong> {String(quotation.projectInfo?.courtType || quotation.projectInfo?.gameType || 'N/A').toUpperCase()}</div>
-              <div><strong>Court Size:</strong> {String(quotation.projectInfo?.courtSize || 'N/A').toUpperCase()}</div>
-              <div><strong>Court Area:</strong> {quotation.requirements?.base?.area || 'N/A'} sq. meters</div>
-            </div>
-          </div>
-
+          // In the project details section, add custom dimensions display:
+// In the QuotationSummary component, find the project details section and update it:
+<div className="section">
+  <h4>Project Details</h4>
+  <div className="info-grid">
+    <div><strong>Sport:</strong> {String(quotation.projectInfo?.sport || 'N/A').replace(/-/g, ' ').toUpperCase()}</div>
+    <div><strong>Facility Type:</strong> {String(quotation.projectInfo?.courtType || quotation.projectInfo?.gameType || 'N/A').toUpperCase()}</div>
+    <div><strong>Court Size:</strong> {String(quotation.projectInfo?.courtSize || 'N/A').toUpperCase()}</div>
+    <div><strong>Court Area:</strong> {quotation.requirements?.base?.area || 'N/A'} sq. meters</div>
+    
+    {/* Show custom dimensions and calculation if available */}
+    {quotation.projectInfo?.customDimensions && 
+     quotation.projectInfo.customDimensions.length && 
+     quotation.projectInfo.customDimensions.width && (
+      <>
+        <div><strong>Custom Length:</strong> {quotation.projectInfo.customDimensions.length} meters</div>
+        <div><strong>Custom Width:</strong> {quotation.projectInfo.customDimensions.width} meters</div>
+        <div><strong>Calculated Area:</strong> 
+          {(parseFloat(quotation.projectInfo.customDimensions.length) * 
+            parseFloat(quotation.projectInfo.customDimensions.width)).toFixed(2)} sq. meters
+        </div>
+      </>
+    )}
+  </div>
+</div>
           <div className="section">
             <h4>Cost Breakdown</h4>
             <table className="cost-table">
