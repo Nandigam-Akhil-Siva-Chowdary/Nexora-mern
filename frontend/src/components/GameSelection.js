@@ -11,7 +11,7 @@ const GameSelection = ({ data, updateData, nextStep }) => {
   useEffect(() => {
     const fetchSportsConfig = async () => {
       try {
-        const response = await axios.get('http://localhost:5000/api/quotations/sports-config');
+        const response = await axios.get('https://nexora-mern-backend1.onrender.com/api/quotations/sports-config');
         setSportsConfig(response.data);
       } catch (error) {
         console.error('Error fetching sports config:', error);

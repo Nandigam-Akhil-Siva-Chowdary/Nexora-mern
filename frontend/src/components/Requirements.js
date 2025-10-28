@@ -17,8 +17,8 @@ const Requirements = ({ data, updateData, nextStep, prevStep, projectInfo }) => 
     const fetchData = async () => {
       try {
         const [pricingRes, equipmentRes] = await Promise.all([
-          axios.get('http://localhost:5000/api/pricing'),
-          axios.get(`http://localhost:5000/api/quotations/equipment/${projectInfo.sport}`)
+          axios.get('https://nexora-mern-backend1.onrender.com/api/pricing'),
+          axios.get(`https://nexora-mern-backend1.onrender.com/api/quotations/equipment/${projectInfo.sport}`)
         ]);
         
         setPricing(pricingRes.data);

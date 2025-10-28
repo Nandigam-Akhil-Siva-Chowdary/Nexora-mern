@@ -86,7 +86,7 @@ const QuotationSummary = ({ formData, prevStep, updateData }) => {
 
       console.log('Sending quotation data:', completeFormData);
 
-      const response = await axios.post('http://localhost:5000/api/quotations', completeFormData);
+      const response = await axios.post('https://nexora-mern-backend1.onrender.com/api/quotations', completeFormData);
       const newQuotation = response.data;
       setQuotation(newQuotation);
       updateData('clientInfo', clientInfo);

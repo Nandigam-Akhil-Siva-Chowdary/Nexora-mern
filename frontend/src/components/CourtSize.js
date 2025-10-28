@@ -15,7 +15,7 @@ const CourtSize = ({ data, updateData, nextStep, prevStep }) => {
   useEffect(() => {
     const fetchPricing = async () => {
       try {
-        const response = await axios.get('http://localhost:5000/api/pricing');
+        const response = await axios.get('https://nexora-mern-backend1.onrender.com/api/pricing');
         setCourtSizes(response.data.courtSizes);
       } catch (error) {
         console.error('Error fetching pricing:', error);

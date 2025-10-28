@@ -1,18 +1,30 @@
 const mongoose = require('mongoose');
 const Pricing = require('../models/Pricing');
+require('dotenv').config();
 
 const initializePricing = async () => {
   try {
-    await mongoose.connect('mongodb://localhost:27017/sports-ground-quotation', {
+    console.log('🔗 Connecting to MongoDB Atlas...');
+    
+    const MONGODB_URI = process.env.MONGODB_URI;
+    
+    if (!MONGODB_URI) {
+      console.error('❌ MONGODB_URI is not defined in environment variables');
+      process.exit(1);
+    }
+
+    await mongoose.connect(MONGODB_URI, {
       useNewUrlParser: true,
       useUnifiedTopology: true,
     });
+
+    console.log('✅ Connected to MongoDB Atlas successfully!');
 
     // Check if pricing data exists
     const existingPricing = await Pricing.findOne({ category: 'default' });
     
     if (!existingPricing) {
-      console.log('Creating default pricing data...');
+      console.log('📊 Creating default pricing data...');
       
       const defaultPricing = new Pricing({
         category: 'default',
@@ -80,15 +92,15 @@ const initializePricing = async () => {
       });
 
       await defaultPricing.save();
-      console.log('Default pricing data created successfully!');
+      console.log('✅ Default pricing data created successfully in MongoDB Atlas!');
     } else {
-      console.log('Pricing data already exists.');
+      console.log('ℹ️ Pricing data already exists in MongoDB Atlas.');
     }
 
     await mongoose.connection.close();
-    console.log('Database connection closed.');
+    console.log('✅ Database connection closed.');
   } catch (error) {
-    console.error('Error initializing pricing data:', error);
+    console.error('❌ Error initializing pricing data:', error);
     process.exit(1);
   }
 };
